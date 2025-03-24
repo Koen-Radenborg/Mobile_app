@@ -20,7 +20,7 @@ const Register = () => {
             return;
         }
 
-        router.push('/screens/auth/login');
+        router.push('../../screens/auth/login');
     };
 
     return (
@@ -59,7 +59,7 @@ const Register = () => {
                     <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push('/screens/auth/login')}>
+                <TouchableOpacity onPress={() => router.push('../../screens/auth/login')}>
                     <Text style={styles.accountText}>Already have an account? Sign in!</Text>
                 </TouchableOpacity>
             </View>

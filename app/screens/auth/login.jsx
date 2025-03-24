@@ -14,7 +14,7 @@ const Login = () => {
             return;
         }
 
-        router.push('/screens/tabs/home');
+        router.push('../../screens/tabs/home');
     };
 
     return (
@@ -45,7 +45,7 @@ const Login = () => {
                     <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push('/screens/auth/register')}>
+                <TouchableOpacity onPress={() => router.push('../../screens/auth/register')}>
                     <Text style={styles.accountText}>Don't already have an account? Sign up!</Text>
                 </TouchableOpacity>
             </View>
