@@ -1,20 +1,36 @@
 import { ImageBackground, Text, View, StyleSheet, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
     const router = useRouter();
-
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
- 
-    const handleLogin = () => {
-        if (!email || !password) {
-            Alert.alert('Validation Error', 'Both fields are required.');
+
+    const handleLogin = async () => {
+        if (!username || !password) {
+            Alert.alert('Validatiefout', 'Beide velden zijn verplicht.');
             return;
         }
 
-        router.push('../../screens/tabs/home');
+        try {
+            const storedUser = await AsyncStorage.getItem('user');
+            if (storedUser) {
+                const { username: savedUsername, password: savedPassword } = JSON.parse(storedUser);
+                
+                if (username === savedUsername && password === savedPassword) {
+                    Alert.alert('Succes', 'Inloggen geslaagd!');
+                    router.push('../../screens/tabs/home');
+                } else {
+                    Alert.alert('Fout', 'Onjuiste gebruikersnaam of wachtwoord.');
+                }
+            } else {
+                Alert.alert('Fout', 'Geen account gevonden. Registreer eerst.');
+            }
+        } catch (error) {
+            Alert.alert('Fout', 'Er is iets misgegaan. Probeer opnieuw.');
+        }
     };
 
     return (
@@ -25,28 +41,27 @@ const Login = () => {
                 <View style={styles.formContainer}>
                     <TextInput 
                         style={styles.input} 
-                        placeholder="Email Address" 
+                        placeholder="Gebruikersnaam" 
                         placeholderTextColor="#000"
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={setEmail}
+                        value={username}
+                        onChangeText={setUsername}
                     />
                     <TextInput 
                         style={styles.input} 
-                        placeholder="Password" 
+                        placeholder="Wachtwoord" 
                         placeholderTextColor="#000" 
-                        secureTextEntry={true}
+                        secureTextEntry
                         value={password}
                         onChangeText={setPassword} 
                     />
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>LOGIN</Text>
+                    <Text style={styles.buttonText}>INLOGGEN</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => router.push('../../screens/auth/register')}>
-                    <Text style={styles.accountText}>Don't already have an account? Sign up!</Text>
+                    <Text style={styles.accountText}>Nog geen account? Registreer!</Text>
                 </TouchableOpacity>
             </View>
         </ImageBackground>

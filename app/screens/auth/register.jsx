@@ -1,66 +1,83 @@
 import { ImageBackground, Text, View, StyleSheet, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Register = () => {
     const router = useRouter();
-
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleRegister = () => {
-        if (!email || !password || !confirmPassword) {
-            Alert.alert('Validation Error', 'All fields are required.');
+    const handleRegister = async () => {
+        if (!username || !password || !confirmPassword) {
+            Alert.alert('Validatiefout', 'Alle velden zijn verplicht.');
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Validation Error', 'Passwords do not match.');
+            Alert.alert('Validatiefout', 'Wachtwoorden komen niet overeen.');
             return;
         }
 
-        router.push('../../screens/auth/login');
+        try {
+            const existingUsers = await AsyncStorage.getItem('users');
+            const users = existingUsers ? JSON.parse(existingUsers) : [];
+
+            // Controleer of de gebruikersnaam al bestaat
+            if (users.some(user => user.username === username)) {
+                Alert.alert('Fout', 'Gebruikersnaam is al in gebruik.');
+                return;
+            }
+
+            // Voeg de nieuwe gebruiker toe
+            users.push({ username, password });
+            await AsyncStorage.setItem('users', JSON.stringify(users));
+
+            Alert.alert('Succes', 'Account aangemaakt!');
+            router.push('../../screens/auth/login');
+        } catch (error) {
+            Alert.alert('Fout', 'Er is iets misgegaan. Probeer opnieuw.');
+        }
     };
 
     return (
         <ImageBackground style={styles.background} source={require('../../../assets/images/Landing-Background-3.png')}>
             <View style={styles.overlay}>
                 <Image source={require('../../../assets/images/Logo.png')} style={styles.logo} />
-                
+
                 <View style={styles.formContainer}>
                     <TextInput 
                         style={styles.input} 
-                        placeholder="Email Address" 
+                        placeholder="Gebruikersnaam" 
                         placeholderTextColor="#000"
-                        keyboardType="email-address"
-                        value={email}
-                        onChangeText={setEmail}
+                        value={username}
+                        onChangeText={setUsername}
                     />
                     <TextInput 
                         style={styles.input} 
-                        placeholder="Password" 
+                        placeholder="Wachtwoord" 
                         placeholderTextColor="#000" 
-                        secureTextEntry={true}
+                        secureTextEntry
                         value={password}
                         onChangeText={setPassword} 
                     />
                     <TextInput 
                         style={styles.input} 
-                        placeholder="Confirm Password" 
+                        placeholder="Bevestig wachtwoord" 
                         placeholderTextColor="#000" 
-                        secureTextEntry={true}
+                        secureTextEntry
                         value={confirmPassword}
                         onChangeText={setConfirmPassword} 
                     />
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
+                    <Text style={styles.buttonText}>ACCOUNT AANMAKEN</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => router.push('../../screens/auth/login')}>
-                    <Text style={styles.accountText}>Already have an account? Sign in!</Text>
+                    <Text style={styles.accountText}>Heb je al een account? Log in!</Text>
                 </TouchableOpacity>
             </View>
         </ImageBackground>

@@ -14,7 +14,7 @@ const App = () => {
                 </Text>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={() => router.push('/screens/auth/register')}>
-                        <Text style={styles.buttonText}>REGISTER</Text>
+                        <Text style={styles.buttonText}>REGISTREER</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button} onPress={() => router.push('/screens/auth/login')}>
                         <Text style={styles.buttonText}>LOGIN</Text>
