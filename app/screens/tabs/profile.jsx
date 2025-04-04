@@ -1,32 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          const { username } = JSON.parse(storedUser);
+          setUsername(username);
+        }
+      } catch (e) {
+        console.error("Failed to load user", e);
+      }
+    };
+
+    fetchUsername();
+  }, []);
+
   return (
     <ScrollView style={styles.container}>
-      {/* Header Afbeelding */}
+      {/* Welcome Message */}
+      {username ? (
+        <Text style={styles.welcomeText}>Welcome, {username} 👋</Text>
+      ) : null}
+
+      {/* Header Image */}
       <Image
         source={require('../../../assets/images/this_is_a_very_silly_cat.png')}
         style={styles.headerImage}
       />
-      
-      {/* Profielfoto en Naam */}
+
+      {/* Profile Section */}
       <View style={styles.profileSection}>
         <Image
           source={require('../../../assets/images/this_is_a_very_silly_cat.png')}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>Sir Whiskers 🐱🎩</Text>
+        <Text style={styles.name}>{username}</Text>
       </View>
 
       {/* Bio */}
       <View style={styles.bioContainer}>
         <Text style={styles.bioText}>
-        Distinguished traveler, professional napper, and connoisseur of cozy hats. When I'm not plotting world domination from a sunny windowsill, I'm off chasing the best sunbeam spots and top-tier cat cafés. Pack your bags (or just sit in them like I do) and join me on an adventure! 🧳🐾
+          Distinguished traveler, professional napper, and connoisseur of cozy hats...
         </Text>
       </View>
-      
-      {/* Favorieten */}
+
+      {/* Favorites */}
       <Text style={styles.favoritesTitle}>❤️ My favorites</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.favoritesContainer}>
         {[1, 2, 3, 4].map((item) => (
@@ -43,6 +67,13 @@ const Profile = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
+  welcomeText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 15,
+    textAlign: "center",
+    color: "#333",
+  },
   headerImage: { width: "100%", height: 200 },
   profileSection: { alignItems: "center", marginTop: -50 },
   profileImage: {
@@ -53,10 +84,24 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
   },
   name: { fontSize: 22, fontWeight: "bold", marginTop: 10 },
-  bioContainer: { margin: 20, padding: 10, backgroundColor: "#f3f3f3", borderRadius: 10 },
+  bioContainer: {
+    margin: 20,
+    padding: 10,
+    backgroundColor: "#f3f3f3",
+    borderRadius: 10,
+  },
   bioText: { fontSize: 14, textAlign: "center" },
-  favoritesTitle: { fontSize: 18, fontWeight: "bold", marginLeft: 20, marginTop: 10 },
-  favoritesContainer: { flexDirection: "row", paddingHorizontal: 20, marginTop: 10 },
+  favoritesTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 20,
+    marginTop: 10,
+  },
+  favoritesContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
   favoriteImage: {
     width: 120,
     height: 100,

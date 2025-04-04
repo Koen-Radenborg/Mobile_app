@@ -16,7 +16,7 @@ const Register = () => {
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Validatiefout', 'Wachtwoorden komen niet overeen.');
+            Alert.alert('Validatiefout', 'Wachtwoorden komen niet overeen.');   
             return;
         }
 
